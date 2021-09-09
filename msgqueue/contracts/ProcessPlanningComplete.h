@@ -8,7 +8,8 @@ struct ProcessingPlan
 {
     std::string cadFileID;
     int rotations, flips, tools, modules, quantity;
-    double processingTime, totalToolDistance, Radius, Direction;
+    double processingTime, totalToolDistance;
+    std::vector<FaceID> bendSequence;
 };
 
 struct ProcessPlanningComplete : public Event
@@ -16,7 +17,6 @@ struct ProcessPlanningComplete : public Event
     std::string userID, cadFileID, taskID;
     int processLevel;
     ProcessingPlan processingPlan;
-    std::vector<FaceID> bendSequence;
 
     std::string EventName();
     json toJson();
