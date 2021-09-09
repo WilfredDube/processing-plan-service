@@ -11,8 +11,8 @@
 #include <amqpcpp/linux_tcp/tcpchannel.h>
 
 const std::string eventNameHeader = "x-event-name";
-const std::string eventName = "featureRecognitionStarted";
-const std::string QueueName = "FEATURERECOGNITION";
+const std::string eventName = "processPlanningStarted";
+const std::string QueueName = "PROCESSPLANNING";
 
 struct AMQPEventListener : public EventListener
 {

@@ -1,5 +1,5 @@
 #include "AMQPEventEmitter.h"
-#include "../contracts/FeatureRecognitionComplete.h"
+#include "../contracts/ProcessPlanningComplete.h"
 
 #include <amqpcpp.h>
 #include <amqpcpp/libev.h>
@@ -20,7 +20,7 @@ void AMQPEventEmitter::setUp()
     AMQP::TcpChannel channel(connection.get());
     connection->heartbeat();
 
-    arguments["x-event-name"] = "featureRecognitionComplete";
+    arguments["x-event-name"] = "processPlanningComplete";
 
     channel.declareExchange(exchange, AMQP::topic, AMQP::durable, arguments);
 }
