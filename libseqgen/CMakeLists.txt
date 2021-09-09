@@ -22,8 +22,8 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -lstdc++fs")
 set(THREADS_PREFER_PTHREAD_FLAG ON)
 
 find_package(Threads REQUIRED)
-find_package(wt COMPONENTS wt wtdbo wtdbosqlite3 wthttp REQUIRED)
+#find_package(wt COMPONENTS wt wtdbo wtdbosqlite3 wthttp REQUIRED)${wt_INCLUDE_DIRS} ${wt_LIBRARIES wthttp wt wtdbo wtdbosqlite3
 
 add_library(seqgen ${Sources} ${Headers})
-target_include_directories(seqgen PRIVATE ${Boost_INCLUDE_DIRS} ${wt_INCLUDE_DIRS} ${OpenCASCADE_INCLUDE_DIR})
-target_link_libraries(seqgen frelib ${Boost_LIBRARIES} Threads::Threads ${wt_LIBRARIES} stdc++fs wthttp wt wtdbo wtdbosqlite3)
+target_include_directories(seqgen PRIVATE ${Boost_INCLUDE_DIRS} ${OpenCASCADE_INCLUDE_DIR})
+target_link_libraries(seqgen frelib ${Boost_LIBRARIES} Threads::Threads stdc++fs)
