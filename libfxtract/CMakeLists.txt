@@ -6,9 +6,8 @@ set(Headers
   include/cad-file-reader/NullFileReader.h
   include/cad-file-reader/UnknownFileFormatException.h
 
-  include/obj-file-reader/readObj.h
-
   include/Computation.h
+  include/Processor.h
   include/sheet-metal-component/BoostSerializer.h
   include/sheet-metal-component/SheetMetal.h
   include/sheet-metal-component/MFaceAbstract.h
@@ -28,9 +27,8 @@ set(Sources
   src/cad-file-reader/IgesFileReader.cpp
   src/cad-file-reader/StepFileReader.cpp
 
-  src/obj-file-reader/readObj.cpp
-  
   src/Computation.cpp
+  src/Processor.cpp
   src/sheet-metal-component/BoostSerializer.cpp
   src/sheet-metal-component/SheetMetal.cpp
   src/sheet-metal-component/MFaceAbstract.cpp
@@ -58,4 +56,4 @@ target_compile_features(frelib PUBLIC cxx_std_17)
 set_target_properties(frelib PROPERTIES CXX_EXTENSIONS OFF)
 
 target_include_directories(frelib PUBLIC ${Boost_INCLUDE_DIRS} ${OpenCASCADE_INCLUDE_DIR})
-target_link_libraries(frelib logger ${Boost_LIBRARIES} Threads::Threads ${OCCT_LIBS} -lboost_serialization)
+target_link_libraries(frelib logger msgqueue ${Boost_LIBRARIES} Threads::Threads ${OCCT_LIBS} -lboost_serialization)
