@@ -1,11 +1,9 @@
 #pragma once
 
 #include "../Event.h"
+#include "../../libfxtract/include/sheet-metal-component/ModelTypes.h"
 
 #include <vector>
-
-typedef int FaceID;
-
 struct ProcessingPlan
 {
     std::string cadFileID;
