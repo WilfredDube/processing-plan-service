@@ -8,7 +8,7 @@ struct ProcessingPlan
 {
     std::string cadFileID;
     int rotations, flips, tools, modules, quantity;
-    double processingTime, totalToolDistance;
+    double processingTime, totalToolDistance, estimatedProductionTime;
     std::vector<FaceID> bendSequence;
 };
 

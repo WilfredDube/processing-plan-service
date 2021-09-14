@@ -28,6 +28,7 @@ json ProcessPlanningComplete::toJson()
         {"processing_time", processingPlan.processingTime},
         {"quantity", 1},
         {"total_tool_distance", processingPlan.totalToolDistance},
+        {"estimated_manufacturing_time", processingPlan.estimatedProductionTime},
         {"bend_sequences", bendSequence}};
 
     json resultJson;
