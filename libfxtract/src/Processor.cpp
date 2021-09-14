@@ -7,6 +7,7 @@
 #include "../../logging/include/StandardOutputLogger.h"
 
 #include "../../libseqgen/include/BendSequenceGenerator.h"
+#include "../../libseqgen/include/ProductionTime.h"
 
 #include "../../msgqueue/contracts/ProcessPlanningStarted.h"
 #include "../../msgqueue/contracts/ProcessPlanningComplete.h"
@@ -58,6 +59,8 @@ std::shared_ptr<Event> ProcessCadFile(EventPtr event)
     result->processingPlan.rotations = bendSequenceGenerator->getNumberOfRotations();
     result->processingPlan.tools = bendSequenceGenerator->getNumberOfTools();
     result->processingPlan.totalToolDistance = bendSequenceGenerator->getNumberOfDistance();
+    result->processingPlan.estimatedProductionTime = computeTotalProductionTime(1, result->processingPlan.tools, cadFile->bendCount,
+                                                                                result->processingPlan.flips, result->processingPlan.rotations);
 
     loggingService->writeInfoEntry("{" + cadFile->userID + "}: " + cadFile->cadFileID + ": Process planning on the extracted features....");
 
