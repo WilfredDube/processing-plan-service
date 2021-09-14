@@ -52,7 +52,7 @@ std::shared_ptr<Event> ProcessCadFile(EventPtr event)
     result->processingPlan.bendSequence = bendSequence;
     result->processingPlan.cadFileID = cadFile->cadFileID;
     result->processingPlan.flips = bendSequenceGenerator->getNumberOfFlips();
-    result->processingPlan.processingTime = total_time;
+    result->processingPlan.processingTime = total_time + cadFile->freTime;
     result->processingPlan.quantity = 1;
     result->processingPlan.modules = bendSequenceGenerator->getNumberOfModules();
     result->processingPlan.rotations = bendSequenceGenerator->getNumberOfRotations();
