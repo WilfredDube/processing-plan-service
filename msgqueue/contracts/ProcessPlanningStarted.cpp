@@ -2,6 +2,7 @@
 
 #include <nlohmann/json.hpp>
 
+#include <iostream>
 using json = nlohmann::json;
 
 std::string ProcessPlanningStarted::EventName()
@@ -18,6 +19,7 @@ void ProcessPlanningStarted::createEvent(std::string data)
     serializedData = j3["serialized_data"];
     bendCount = j3["bend_count"];
     taskID = j3["task_id"];
+    freTime = j3["fre_time"];
 }
 
 json ProcessPlanningStarted::toJson()
