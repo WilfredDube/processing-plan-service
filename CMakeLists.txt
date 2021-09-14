@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.0)
 
-project(processingplan-service_1.0)
+project(processing-plan-service_1.0)
 
 link_libraries(stdc++fs)
 
@@ -31,12 +31,12 @@ find_package(Threads REQUIRED)
 find_package(nlohmann_json 3.2.0 REQUIRED)
 find_package(Boost COMPONENTS system filesystem REQUIRED)
 
-add_executable (processingplan-service ${main_source_files})
-target_include_directories(processingplan-service PRIVATE ${amqpcpp_INCLUDE_DIRS} ${Boost_INCLUDE_DIRS})
-target_link_libraries(processingplan-service  logger frelib seqgen msgqueue -g ${Boost_LIBRARIES} Threads::Threads -lboost_serialization ev boost_system dl Threads::Threads ${amqpcpp_LIBRARIES} amqpcpp nlohmann_json::nlohmann_json)
+add_executable (processing-plan-service ${main_source_files})
+target_include_directories(processing-plan-service PRIVATE ${amqpcpp_INCLUDE_DIRS} ${Boost_INCLUDE_DIRS})
+target_link_libraries(processing-plan-service  logger frelib seqgen msgqueue -g ${Boost_LIBRARIES} Threads::Threads -lboost_serialization ev boost_system dl Threads::Threads ${amqpcpp_LIBRARIES} amqpcpp nlohmann_json::nlohmann_json)
 
 install(
-  TARGETS processingplan-service 
+  TARGETS processing-plan-service 
   DESTINATION bin
 )
 
