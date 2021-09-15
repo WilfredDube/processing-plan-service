@@ -38,13 +38,21 @@ std::shared_ptr<Event> ProcessCadFile(EventPtr event)
     auto bendSequenceGenerator = std::make_shared<BendSequenceGenerator>(redis, vec, unStringifiedSheetMetalObj);
 
     int startTime = clock();
+    auto begin = std::chrono::high_resolution_clock::now();
 
-    auto bendSequenceGenerator = std::make_shared<BendSequenceGenerator>(vec, unStringifiedSheetMetalObj);
     bendSequenceGenerator->generateBendingSequence();
-    bendSequenceGenerator->print();
 
+    auto end = std::chrono::high_resolution_clock::now();
     int stopTime = clock();
+
     auto total_time = (stopTime - startTime) / double(CLOCKS_PER_SEC);
+
+    bendSequenceGenerator->print();
+    std::cout << "Time difference = " << std::chrono::duration_cast<std::chrono::microseconds>(end - begin).count() << "[µs]" << std::endl;
+    std::cout << "Time difference = " << std::chrono::duration_cast<std::chrono::nanoseconds>(end - begin).count() << "[ns]" << std::endl;
+    std::cout << "Total difference = " << total_time << "[s]" << std::endl;
+    std::cout << "Time difference = " << std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count() << "[ms]" << std::endl;
+    std::cout << "Time difference = " << std::chrono::duration_cast<std::chrono::seconds>(end - begin).count() << "[s]" << std::endl;
 
     auto result = std::make_shared<ProcessPlanningComplete>();
 
