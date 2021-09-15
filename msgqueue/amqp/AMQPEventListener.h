@@ -13,7 +13,6 @@
 const std::string eventNameHeader = "x-event-name";
 const std::string eventName = "processPlanningStarted";
 const std::string QueueName = "PROCESSPLANNING";
-
 struct AMQPEventListener : public EventListener
 {
     std::shared_ptr<AMQP::TcpConnection> connection;

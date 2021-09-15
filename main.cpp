@@ -21,8 +21,6 @@
 #include <functional>
 // namespace fs = std::filesystem;
 
-using json = nlohmann::json;
-
 enum class ProcessLevel
 {
   UNPROCESSED,
