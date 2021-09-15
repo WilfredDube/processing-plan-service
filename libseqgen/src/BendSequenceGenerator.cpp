@@ -122,11 +122,25 @@ void BendSequenceGenerator::generateBendingSequence()
         return ;
     }
 
-    // current generation 
-    int generation = 0;   
-    std::vector<Sequence> population; 
+    try
+    {
+        auto val = redis.get(std::to_string(initialSequence.size())); // val is of type OptionalString. See 'API Reference' section for details.
+        if (val)
+        {
+            genomes = restoreGenome(*val);
+        }
+        else
+        {
+            findPermutations(arr, initialSequence.size(), genomes);
 
-    size_t POPULATION_SIZE = Fxt::Computation::computeFactorial(initialSequence.size());
+            auto value = save(genomes);
+            redis.set(std::to_string(initialSequence.size()), value);
+        }
+    }
+    catch (...)
+    {
+        // Error handling.
+    }
 
     // create initial population 
     int arr[initialSequence.size()];
