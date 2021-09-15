@@ -12,8 +12,16 @@
 #include "../../msgqueue/contracts/ProcessPlanningStarted.h"
 #include "../../msgqueue/contracts/ProcessPlanningComplete.h"
 
+#include <chrono>
+#include <sw/redis++/redis++.h>
+
+std::string RedisCache = "tcp://localhost:6379";
+
 std::shared_ptr<Event> ProcessCadFile(EventPtr event)
 {
+    using namespace sw::redis;
+    auto redis = Redis(RedisCache);
+
     auto cadFile = dynamic_cast<ProcessPlanningStarted *>(event.get());
 
     auto unStringifiedSheetMetalObj = restore(cadFile->serializedData);
@@ -26,6 +34,8 @@ std::shared_ptr<Event> ProcessCadFile(EventPtr event)
                       value += 1;
                       return value;
                   });
+
+    auto bendSequenceGenerator = std::make_shared<BendSequenceGenerator>(redis, vec, unStringifiedSheetMetalObj);
 
     int startTime = clock();
 
