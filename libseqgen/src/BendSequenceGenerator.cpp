@@ -7,7 +7,31 @@
 #include <iostream>
 #include <chrono>
 #include <random>
+#include <boost/serialization/vector.hpp>
 
+std::vector<std::vector<int>> genomes;
+std::map<std::pair<Fxt::SheetMetalComponent::FaceID, Fxt::SheetMetalComponent::FaceID>, std::pair<int, double>> cache;
+
+std::string
+save(const std::vector<std::vector<int>> genomes)
+{
+    std::stringstream ss;
+    boost::archive::text_oarchive oa(ss);
+    oa << genomes;
+
+    return ss.str();
+}
+
+std::vector<std::vector<int>> restoreGenome(std::string restoreStr)
+{
+    std::vector<std::vector<int>> restored;
+
+    std::stringstream iss(restoreStr);
+    boost::archive::text_iarchive oa(iss);
+    oa >> restored;
+
+    return restored;
+}
 
 BendSequenceGenerator::BendSequenceGenerator(sw::redis::Redis &redis, std::vector<int> chromosome, SheetMetalPtr &model)
     : sheetMetalFeature{model}, redis{redis}
@@ -85,10 +109,10 @@ void BendSequenceGenerator::generateBendingSequence()
         arr[i] = initialSequence[i];
     }
     
-    std::vector<std::vector<int>> genomes;
+            genomes = restoreGenome(*val);
     findPermutations(arr, initialSequence.size(), genomes);
 
-    for(int i = 0; i < genomes.size() ; i++) 
+            auto value = save(genomes);
     { 
         population.push_back({ Sequence(genomes[i]) });
         population[i].fitness = population[i].cal_fitness(sheetMetalFeature);
