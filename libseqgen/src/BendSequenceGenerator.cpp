@@ -147,16 +147,9 @@ void BendSequenceGenerator::generateBendingSequence()
 
     for (size_t i = 0; i < initialSequence.size(); i++)
     {
-        arr[i] = initialSequence[i];
-    }
-    
-            genomes = restoreGenome(*val);
-    findPermutations(arr, initialSequence.size(), genomes);
-
-            auto value = save(genomes);
-    { 
-        population.push_back({ Sequence(genomes[i]) });
-        population[i].fitness = population[i].cal_fitness(sheetMetalFeature);
+        auto genome = Sequence(genomes[i]);
+        genome.fitness = genome.cal_fitness(sheetMetalFeature);
+        population.push_back(genome);
     }    
 
     // // sort the population in increasing order of fitness score 
