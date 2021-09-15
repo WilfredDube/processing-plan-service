@@ -41,13 +41,13 @@ BendSequenceGenerator::BendSequenceGenerator(sw::redis::Redis &redis, std::vecto
     sequenceImpl_ = std::make_shared<BendSequenceGenerator::Sequence>(chromosome);
 };
 
-double BendSequenceGenerator::Sequence::cal_fitness(SheetMetalPtr& sheetMetalFeature)
+double BendSequenceGenerator::Sequence::cal_fitness(SheetMetalPtr &sheetMetalFeature)
 {
-    int len = targetSize; 
+    int len = targetSize;
     double parallel = 1, equality = 1, direction = 1, fitness = 0, seqDistance = 0.0, pairwiseFitness;
 
     for (int i = 0; i < len; i++)
-    { 
+    {
         if ((i + 1) < len)
         {
             if (cache.find({chromosome[i], chromosome[i + 1]}) != cache.end())
@@ -58,48 +58,48 @@ double BendSequenceGenerator::Sequence::cal_fitness(SheetMetalPtr& sheetMetalFea
             }
             else
             {
-            // Add 15 if the current and next bend have the same bend angle
+                // Add 15 if the current and next bend have the same bend angle
                 if (sheetMetalFeature->isSameAngle(chromosome[i], chromosome[i + 1]))
                 {
-                equality = 10;
+                    equality = 10;
                 }
                 else
                 {
-                ++nTools;
-            }
-        
-            // Compute the distance between the current and next bend
-            double dist = sheetMetalFeature->distance(chromosome[i], chromosome[i + 1]);
+                    ++nTools;
+                }
+
+                // Compute the distance between the current and next bend
+                double dist = sheetMetalFeature->distance(chromosome[i], chromosome[i + 1]);
 
                 if (dist != 0)
                 {
-                seqDistance = sheetMetalFeature->distance(chromosome[i], chromosome[i + 1]);
-            }             
-        
+                    seqDistance = sheetMetalFeature->distance(chromosome[i], chromosome[i + 1]);
+                }
+
                 if (sheetMetalFeature->isSameDirection(chromosome[i], chromosome[i + 1]))
                 {
-                direction = 30;
+                    direction = 30;
                 }
                 else
                 {
-                ++nFlips;
-            }            
-       
-            // Add 20 to the fitness if the current and next bend are parallel
+                    ++nFlips;
+                }
+
+                // Add 20 to the fitness if the current and next bend are parallel
                 if (sheetMetalFeature->isParallel(chromosome[i], chromosome[i + 1]))
                 {
-                parallel = 20;
+                    parallel = 20;
                 }
                 else
                 {
-                ++nRotations;
+                    ++nRotations;
+                }
             }
-        } 
 
             pairwiseFitness = parallel * equality * direction / (seqDistance * nFlips * nRotations + 1);
             fitness += pairwiseFitness;
-  
-        distance += seqDistance;
+
+            distance += seqDistance;
 
             cache.insert({{chromosome[i], chromosome[i + 1]}, {pairwiseFitness, seqDistance}});
 
@@ -114,12 +114,20 @@ double BendSequenceGenerator::Sequence::cal_fitness(SheetMetalPtr& sheetMetalFea
 }
 
 void BendSequenceGenerator::generateBendingSequence()
-{   
+{
     std::vector<int> initialSequence = sequenceImpl_->chromosome;
 
     if (initialSequence.size() == 1 || initialSequence.size() == 2)
     {
-        return ;
+        return;
+    }
+
+    // create initial population
+    int arr[initialSequence.size()];
+
+    for (size_t i = 0; i < initialSequence.size(); i++)
+    {
+        arr[i] = initialSequence[i];
     }
 
     try
@@ -142,35 +150,33 @@ void BendSequenceGenerator::generateBendingSequence()
         // Error handling.
     }
 
-    // create initial population 
-    int arr[initialSequence.size()];
-
-    for (size_t i = 0; i < initialSequence.size(); i++)
+    std::vector<Sequence> population;
+    for (int i = 0; i < genomes.size(); i++)
     {
         auto genome = Sequence(genomes[i]);
         genome.fitness = genome.cal_fitness(sheetMetalFeature);
         population.push_back(genome);
-    }    
+    }
 
-    // // sort the population in increasing order of fitness score 
+    // // sort the population in increasing order of fitness score
     std::sort(population.begin(), population.end());
 
-    int n = 0;   
-    while (n < 10)
-    {   
-        std::cout<< "Generation: " << n << "\t"; 
-        std::cout<< "String: " ;
-        for(auto& c : population[n].chromosome)
-        	std::cout<< c << " ";
-        std::cout <<"\t"; 
-        std::cout << "Fitness: "<< population[n].fitness << "  "<< "Flips: "<< population[n].nFlips;
-        std::cout << " Tools: " << population[n].nTools;
-        std::cout << " Rotations: " << population[n].nRotations;
-        std::cout << " Distance: " << population[n].distance << "\n"; 
-  
-        ++n; 
-     }
+    // int n = 0;
+    // while (n < 10)
+    // {
+    //     std::cout << "Generation: " << n << "\t";
+    //     std::cout << "String: ";
+    //     for (auto &c : population[n].chromosome)
+    //         std::cout << c << " ";
+    //     std::cout << "\t";
+    //     std::cout << "Fitness: " << population[n].fitness << "  "
+    //               << "Flips: " << population[n].nFlips;
+    //     std::cout << " Tools: " << population[n].nTools;
+    //     std::cout << " Rotations: " << population[n].nRotations;
+    //     std::cout << " Distance: " << population[n].distance << "\n";
 
+    //     ++n;
+    // }
 
     int bestSeq = 0;
     sequenceImpl_->chromosome = population[bestSeq].chromosome;
@@ -186,36 +192,38 @@ void BendSequenceGenerator::generateBendingSequence()
 std::vector<int> BendSequenceGenerator::getSequence() { return sequenceImpl_->chromosome; }
 
 size_t BendSequenceGenerator::getSequenceSize() { return sequenceImpl_->chromosome.size(); }
-    
+
 void BendSequenceGenerator::print()
 {
     std::cout << "======================================================================";
     std::cout << "==============================" << std::endl;
     std::cout << "======================================================================";
     std::cout << "==============================" << std::endl;
-    std::cout<< "Best Sequence: " << "\t"; 
-    for(auto& c : sequenceImpl_->chromosome) {
-        std::cout<< c << " ";
-        std::cout <<"\t"; 
+    std::cout << "Best Sequence: "
+              << "\t";
+    for (auto &c : sequenceImpl_->chromosome)
+    {
+        std::cout << c << " ";
+        std::cout << "\t";
     }
-    std::cout<< "Fitness : "<< sequenceImpl_->fitness << "\n";
-    std::cout<< "No of tools : "<< sequenceImpl_->nTools << "\n";
-    std::cout<< "No of rotations : "<< sequenceImpl_->nRotations << "\n";
-    std::cout<< "No of flips : "<< sequenceImpl_->nFlips << "\n";
-    std::cout<< "Distance : "<< sequenceImpl_->distance << "\n";
-    std::cout<< "Target size : "<< sequenceImpl_->targetSize << "\n";
+    std::cout << "Fitness : " << sequenceImpl_->fitness << "\n";
+    std::cout << "No of tools : " << sequenceImpl_->nTools << "\n";
+    std::cout << "No of rotations : " << sequenceImpl_->nRotations << "\n";
+    std::cout << "No of flips : " << sequenceImpl_->nFlips << "\n";
+    std::cout << "Distance : " << sequenceImpl_->distance << "\n";
+    std::cout << "Target size : " << sequenceImpl_->targetSize << "\n";
     std::cout << "======================================================================";
     std::cout << "==============================" << std::endl;
     std::cout << "======================================================================";
     std::cout << "==============================" << std::endl;
 }
 
-bool BendSequenceGenerator::Sequence::operator<(const BendSequenceGenerator::Sequence& individualSequence)
+bool BendSequenceGenerator::Sequence::operator<(const BendSequenceGenerator::Sequence &individualSequence)
 {
     return (this->fitness > individualSequence.fitness);
 }
 
-bool BendSequenceGenerator::Sequence::operator==(const BendSequenceGenerator::Sequence& individualSequence)
+bool BendSequenceGenerator::Sequence::operator==(const BendSequenceGenerator::Sequence &individualSequence)
 {
     return std::equal(cbegin(this->chromosome), cend(this->chromosome), cbegin(individualSequence.chromosome));
 }
