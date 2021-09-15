@@ -7,6 +7,8 @@
 #include <iostream>
 #include <chrono>
 #include <random>
+#include <map>
+#include <utility>
 #include <boost/serialization/vector.hpp>
 
 std::vector<std::vector<int>> genomes;
@@ -42,45 +44,70 @@ BendSequenceGenerator::BendSequenceGenerator(sw::redis::Redis &redis, std::vecto
 double BendSequenceGenerator::Sequence::cal_fitness(SheetMetalPtr& sheetMetalFeature)
 {
     int len = targetSize; 
-    double parallel = 1, equality = 1, direction = 1, fitness = 0, seqDistance = 0.0;
+    double parallel = 1, equality = 1, direction = 1, fitness = 0, seqDistance = 0.0, pairwiseFitness;
 
-    for(int i = 0; i < len; i++) 
+    for (int i = 0; i < len; i++)
     { 
         if ((i + 1) < len)
         {
+            if (cache.find({chromosome[i], chromosome[i + 1]}) != cache.end())
+            {
+                fitness += cache[{chromosome[i], chromosome[i + 1]}].first;
+                distance += cache[{chromosome[i], chromosome[i + 1]}].second;
+                continue;
+            }
+            else
+            {
             // Add 15 if the current and next bend have the same bend angle
-            if(sheetMetalFeature->isSameAngle(chromosome[i], chromosome[i + 1])) {
+                if (sheetMetalFeature->isSameAngle(chromosome[i], chromosome[i + 1]))
+                {
                 equality = 10;
-            } else {
+                }
+                else
+                {
                 ++nTools;
             }
         
             // Compute the distance between the current and next bend
             double dist = sheetMetalFeature->distance(chromosome[i], chromosome[i + 1]);
 
-            if(dist != 0){
+                if (dist != 0)
+                {
                 seqDistance = sheetMetalFeature->distance(chromosome[i], chromosome[i + 1]);
             }             
         
-            if(sheetMetalFeature->isSameDirection(chromosome[i], chromosome[i + 1])) {
+                if (sheetMetalFeature->isSameDirection(chromosome[i], chromosome[i + 1]))
+                {
                 direction = 30;
-            } else {
+                }
+                else
+                {
                 ++nFlips;
             }            
        
             // Add 20 to the fitness if the current and next bend are parallel
-            if(sheetMetalFeature->isParallel(chromosome[i], chromosome[i + 1])){
+                if (sheetMetalFeature->isParallel(chromosome[i], chromosome[i + 1]))
+                {
                 parallel = 20;
-            } else {
+                }
+                else
+                {
                 ++nRotations;
             }
         } 
 
-        fitness += parallel * equality * direction / (seqDistance * nFlips * nRotations + 1);
+            pairwiseFitness = parallel * equality * direction / (seqDistance * nFlips * nRotations + 1);
+            fitness += pairwiseFitness;
   
         distance += seqDistance;
 
-        parallel = 1; equality = 1; direction = 1; seqDistance = 0.0;
+            cache.insert({{chromosome[i], chromosome[i + 1]}, {pairwiseFitness, seqDistance}});
+
+            parallel = 1;
+            equality = 1;
+            direction = 1;
+            seqDistance = 0.0;
+        }
     }
 
     return fitness;
