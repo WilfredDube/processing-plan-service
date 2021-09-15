@@ -4,6 +4,7 @@
 
 #include <memory>
 #include <vector>
+#include <sw/redis++/redis++.h>
 
 class BendSequenceGenerator
 {
@@ -24,11 +25,11 @@ class BendSequenceGenerator
 
     std::shared_ptr<Sequence> sequenceImpl_;
 
-    SheetMetalPtr& sheetMetalFeature;
+    sw::redis::Redis &redis;
 
 public:
     BendSequenceGenerator() = delete;
-    explicit BendSequenceGenerator(std::vector<int> chromosome, SheetMetalPtr& model);
+    explicit BendSequenceGenerator(sw::redis::Redis &redis, std::vector<int> chromosome, SheetMetalPtr &model);
 
     void generateBendingSequence();
 

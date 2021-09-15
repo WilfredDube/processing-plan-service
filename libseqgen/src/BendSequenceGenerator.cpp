@@ -8,8 +8,9 @@
 #include <chrono>
 #include <random>
 
-BendSequenceGenerator::BendSequenceGenerator(std::vector<int> chromosome, SheetMetalPtr& model) 
-: sheetMetalFeature { model}
+
+BendSequenceGenerator::BendSequenceGenerator(sw::redis::Redis &redis, std::vector<int> chromosome, SheetMetalPtr &model)
+    : sheetMetalFeature{model}, redis{redis}
 {
     sequenceImpl_ = std::make_shared<BendSequenceGenerator::Sequence>(chromosome);
 };
