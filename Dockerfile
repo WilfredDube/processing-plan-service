@@ -1,57 +1,64 @@
-FROM frolvlad/alpine-gxx
+# We use Ubuntu image as OpenCascade (at least 7.4.0 won't compile on alpine).
+FROM ubuntu:latest
 
-# Install dependences
-RUN apk add --no-cache make cmake \
-    build-base \
-    boost boost-dev \
-    tcl \
-    freetype \
-    tcl-dev freetype-dev tk tk-dev
+# To avoid all sort of prompts from apt-get.
+# You use this mode when you need zero interaction while installing or upgrading the system via apt.
+# It accepts the default answer for all questions. It might mail an error message to the root user,
+# but that's it all. Otherwise, it is totally silent and humble, a perfect frontend for automatic
+# installs. One can use such mode in Dockerfile, shell scripts, cloud-init script, and more.
+ENV DEBIAN_FRONTEND=noninteractive
 
-WORKDIR /opt/
-COPY ./third_party/OCCT /opt/
-RUN mkdir -p build \
+# The build-essentials packages are meta-packages that are necessary for compiling software.
+# They include the GNU debugger, g++/GNU compiler collection, and some more tools and libraries
+# that are required to compile a program. For example, if you need to work on a C/C++ compiler,
+# you need to install essential meta-packages on your system before starting the C compiler installation.
+# When installing the build-essential packages, some other packages such as G++, dpkg-dev, GCC and make, etc.
+# also install on your system.
+RUN apt-get update --fix-missing && \
+    apt-get -y install build-essential git cmake libboost-all-dev libev-dev \
+    openssl libssl*-dev tcl tcl-dev tk tk-dev libfreeimage-dev libxmu-dev libxi-dev \
+    libglfw3-dev libgl1-mesa-dev libglu1-mesa-dev xvfb wget && \
+    apt-get clean all && \
+    rm -rf /var/lib/apt/lists/*
+
+RUN git clone https://github.com/nlohmann/json.git \
+    && cd json && mkdir -p build \
+    && cd build \
+    && cmake .. \
+    && cmake --build . --target install \
+    && cmake --build . --target clean \
+    && rm -rf ../../json
+
+RUN git clone https://github.com/CopernicaMarketingSoftware/AMQP-CPP.git \
+    && cd AMQP-CPP && mkdir -p build \
+    && cd build \
+    && cmake .. -DAMQP-CPP_BUILD_SHARED=ON -DAMQP-CPP_LINUX_TCP=ON \
+    && cmake --build . --target install \
+    && cmake --build . --target clean \
+    && rm -rf ../../AMQP-CPP
+
+RUN git clone https://github.com/redis/hiredis.git \
+    && cd hiredis && make && make install
+
+RUN git clone https://github.com/sewenew/redis-plus-plus.git \
+    && cd redis-plus-plus && mkdir -p build \
+    && cd build \
+    && cmake -DREDIS_PLUS_PLUS_CXX_STANDARD=17 .. \
+    && make && make install
+
+RUN wget https://github.com/tpaviot/oce/releases/download/official-upstream-packages/opencascade-7.4.0.tgz \
+    && tar -xzf opencascade-7.4.0.tgz \
+    && cd opencascade-7.4.0/ && mkdir -p build \
+    && cd build \
+    && cmake .. \
+    && cmake --build . --target install 
+
+WORKDIR /app
+COPY . .
+RUN ls /app && mkdir -p build \
     && cd build \
     && cmake .. \
     && make \
-    && make install \
-    && make clean \
-    && rm -rf *
+    && make install
 
-# RUN mkdir WtApp && cd WtApp
-WORKDIR /Fxtract
-COPY ./* /Fxtract/
-
-# RUN mkdir -p third_party \
-#     && cd third_party \
-#     && git clone https://github.com/Open-Cascade-SAS/OCCT.git \
-#     && ls \
-#     && cd OCCT \
-#     && mkdir -p build \
-#     && cd build \
-#     && cmake .. \
-#     && make \
-#     && make install \
-#     && make clean
-
-
-# COPY ./third_party/wt /opt
-# RUN git submodule update --init --recursive
-# RUN apk add --no-cache boost-dev
-# RUN cd wt && mkdir build && cd build && cmake ../ && make && make install && make clean
-# RUN rm -rf wt
-# These commands copy your files into the specified directory in the image
-# and set that as the working location
-# COPY ./third_party/opencascade-7.4.0.tgz /opt/
-# WORKDIR /opt/docker_test
-# COPY ./hello-docker.cpp /opt/docker_test
-# COPY ./Makefile /opt/docker_test
-# COPY ./CMakeLists.txt /opt/docker_test
-
-# This command compiles your app using GCC, adjust for your source code
-# RUN g++ -o hello-docker hello-docker.cpp -lwthttp -lwt
-
-# This command runs your application, comment out this line to compile only
-# CMD ["./hello-docker"]
-
-# LABEL Name=hellogrpc Version=0.0.1
+CMD ["processing-plan-service"]
