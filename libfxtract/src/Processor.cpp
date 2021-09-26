@@ -15,7 +15,7 @@
 #include <chrono>
 #include <sw/redis++/redis++.h>
 
-std::string RedisCache = "tcp://localhost:6379";
+std::string RedisCache = "tcp://redis:6379";
 
 std::shared_ptr<Event> ProcessCadFile(EventPtr event)
 {
