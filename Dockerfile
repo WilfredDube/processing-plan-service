@@ -46,11 +46,12 @@ RUN git clone https://github.com/sewenew/redis-plus-plus.git \
     && cmake -DREDIS_PLUS_PLUS_CXX_STANDARD=17 .. \
     && make && make install
 
-RUN wget https://github.com/tpaviot/oce/releases/download/official-upstream-packages/opencascade-7.4.0.tgz \
-    && tar -xzf opencascade-7.4.0.tgz \
-    && cd opencascade-7.4.0/ && mkdir -p build \
+RUN git clone https://github.com/Open-Cascade-SAS/OCCT.git \
+    && cd OCCT \
+    && mkdir -p build \
     && cd build \
     && cmake .. \
+    -DCMAKE_BUILD_TYPE=release \
     && cmake --build . --target install 
 
 WORKDIR /app
@@ -60,5 +61,7 @@ RUN ls /app && mkdir -p build \
     && cmake .. \
     && make \
     && make install
+
+ENV LD_LIBRARY_PATH="/lib:/usr/lib:/usr/local/lib"
 
 CMD ["processing-plan-service"]
