@@ -115,6 +115,7 @@ double BendSequenceGenerator::Sequence::cal_fitness(SheetMetalPtr &sheetMetalFea
 
 void BendSequenceGenerator::generateBendingSequence()
 {
+    logger->writeInfoEntry(__FILE__, __LINE__, "Process planning started....");
     std::vector<int> initialSequence = sequenceImpl_->chromosome;
 
     if (initialSequence.size() == 1 || initialSequence.size() == 2)

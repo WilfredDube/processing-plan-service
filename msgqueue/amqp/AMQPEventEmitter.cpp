@@ -42,17 +42,16 @@ bool AMQPEventEmitter::Emit(std::shared_ptr<Event> event)
     auto res = channel.publish(exchange, event->EventName(), envelope);
 
     channel.commitTransaction()
-        .onSuccess([]()
+        .onSuccess([&]()
                    {
                        // all messages were successfully published })
-                       std::cout << "Successfully published" << std::endl;
+                       loggingService->writeInfoEntry(__FILE__, __LINE__, "Successfully published");
                    })
-        .onError([](const char *message)
+        .onError([&](const char *message)
                  {
                      // none of the messages were published
                      // now we have to do it all over again
-                     std::cout << "Failed to publish" << std::endl;
-                     std::cout << message << std::endl;
+                     loggingService->writeErrorEntry(__FILE__, __LINE__, "Failed to publish" + std::string(message));
                  });
 
     return res;

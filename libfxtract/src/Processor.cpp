@@ -22,9 +22,10 @@ std::shared_ptr<Event> ProcessCadFile(EventPtr event, Logger loggingService)
     using namespace sw::redis;
 
     auto cadFile = dynamic_cast<ProcessPlanningStarted *>(event.get());
+    loggingService->setLoggingID(cadFile->userID, cadFile->cadFileID);
 
+    loggingService->writeInfoEntry(__FILE__, __LINE__, "Unserializing data....");
     auto unStringifiedSheetMetalObj = restore(cadFile->serializedData);
-    auto loggingService = std::make_shared<Fxt::Logging::StandardOutputLogger>(cadFile->userID);
 
     int value = 0;
     std::vector<int> vec(cadFile->bendCount);
@@ -79,7 +80,7 @@ std::shared_ptr<Event> ProcessCadFile(EventPtr event, Logger loggingService)
     result->processingPlan.estimatedProductionTime = computeTotalProductionTime(1, result->processingPlan.tools, cadFile->bendCount,
                                                                                 result->processingPlan.flips, result->processingPlan.rotations);
 
-    loggingService->writeInfoEntry("{" + cadFile->userID + "}: " + cadFile->cadFileID + ": Process planning on the extracted features....");
+    loggingService->writeInfoEntry(__FILE__, __LINE__, "Process planning complete....");
 
     return result;
 }
