@@ -26,17 +26,21 @@ std::shared_ptr<Event> ProcessCadFile(EventPtr event, Logger loggingService)
     loggingService->setLoggingID(cadFile->userID, cadFile->cadFileID);
 
     loggingService->writeInfoEntry(__FILE__, __LINE__, "Unserializing data....");
-    auto unStringifiedSheetMetalObj = restore(cadFile->serializedData);
 
-    int value = 0;
     std::vector<int> vec(cadFile->bendCount);
-    std::generate(begin(vec), end(vec), [&value]
-                  {
-                      value += 1;
-                      return value;
-                  });
+    SheetMetalPtr unStringifiedSheetMetalObj;
+
     try
     {
+        unStringifiedSheetMetalObj = restore(cadFile->serializedData);
+
+        int value = 0;
+        std::generate(begin(vec), end(vec), [&value]
+                      {
+                          value += 1;
+                          return value;
+                      });
+
         RedisCache = std::getenv("REDIS");
     }
     catch (const std::exception &e)

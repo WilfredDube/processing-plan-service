@@ -2,8 +2,10 @@
 
 #include "../../include/sheet-metal-component/SheetMetal.h"
 
-std::string save(const std::shared_ptr<Fxt::SheetMetalComponent::SheetMetal>& sheetMetalFeatureModel)
-{    
+#include <stdexcept>
+
+std::string save(const std::shared_ptr<Fxt::SheetMetalComponent::SheetMetal> &sheetMetalFeatureModel)
+{
     std::stringstream ss;
     boost::archive::text_oarchive oa(ss);
     oa << *sheetMetalFeatureModel;
@@ -13,6 +15,11 @@ std::string save(const std::shared_ptr<Fxt::SheetMetalComponent::SheetMetal>& sh
 
 std::shared_ptr<Fxt::SheetMetalComponent::SheetMetal> restore(std::string restoreStr)
 {
+    if (restoreStr.empty())
+    {
+        throw std::invalid_argument("Unable to restore serialized data.");
+    }
+
     auto restored = std::make_unique<Fxt::SheetMetalComponent::SheetMetal>();
 
     std::stringstream iss(restoreStr);
