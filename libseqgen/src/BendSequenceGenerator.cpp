@@ -35,8 +35,8 @@ std::vector<std::vector<int>> restoreGenome(std::string restoreStr)
     return restored;
 }
 
-BendSequenceGenerator::BendSequenceGenerator(sw::redis::Redis &redis, std::vector<int> chromosome, SheetMetalPtr &model)
-    : sheetMetalFeature{model}, redis{redis}
+BendSequenceGenerator::BendSequenceGenerator(sw::redis::Redis &redis, std::vector<int> chromosome, SheetMetalPtr &model, Logger &logger)
+    : sheetMetalFeature{model}, redis{redis}, logger{logger}
 {
     sequenceImpl_ = std::make_shared<BendSequenceGenerator::Sequence>(chromosome);
 };

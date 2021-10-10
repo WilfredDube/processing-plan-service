@@ -17,10 +17,9 @@
 
 std::string RedisCache = "tcp://redis:6379";
 
-std::shared_ptr<Event> ProcessCadFile(EventPtr event)
+std::shared_ptr<Event> ProcessCadFile(EventPtr event, Logger loggingService)
 {
     using namespace sw::redis;
-    auto redis = Redis(RedisCache);
 
     auto cadFile = dynamic_cast<ProcessPlanningStarted *>(event.get());
 

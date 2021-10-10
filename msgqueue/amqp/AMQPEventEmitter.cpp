@@ -9,8 +9,8 @@
 #include <amqpcpp/linux_tcp/tcpchannel.h>
 
 AMQPEventEmitter::AMQPEventEmitter(std::shared_ptr<AMQP::TcpConnection> connection,
-                                   std::string exchange)
-    : connection{connection}, exchange{exchange}
+                                   std::string exchange, Logger loggingService)
+    : connection{connection}, exchange{exchange}, loggingService{loggingService}
 {
     setUp();
 }

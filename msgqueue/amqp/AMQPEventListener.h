@@ -2,6 +2,7 @@
 #include "../Event.h"
 
 #include "../../libfxtract/include/Processor.h"
+#include "../../logging/include/LoggingFacility.h"
 
 #include <amqpcpp.h>
 #include <amqpcpp/libev.h>
@@ -19,13 +20,14 @@ struct AMQPEventListener : public EventListener
     std::shared_ptr<EventEmitter> eventEmitter;
     std::string exchange, queue;
     EventMapper mapper;
+    Logger loggingService;
 
 public:
     AMQPEventListener(std::shared_ptr<AMQP::TcpConnection> &connection,
                       std::shared_ptr<EventEmitter> eventEmitter,
-                      std::string exchange, std::string queue);
+                      std::string exchange, std::string queue, Logger loggingService);
 
     void setUp();
     void Listen(std::vector<std::string> &list,
-                std::function<std::shared_ptr<Event>(EventPtr event)> &);
+                std::function<std::shared_ptr<Event>(EventPtr event, Logger loggingService)> &);
 };

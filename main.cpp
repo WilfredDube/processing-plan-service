@@ -17,6 +17,7 @@
 #include "msgqueue/amqp/AMQPEventListener.h"
 #include "msgqueue/amqp/AMQPHandler.h"
 #include "libfxtract/include/Processor.h"
+#include "logging/include/StandardOutputLogger.h"
 
 #include <functional>
 // namespace fs = std::filesystem;
@@ -44,17 +45,18 @@ int main()
   // handler for libev
   AMQPHandler handler(loop);
 
-  // make a connection
-  auto connection = std::make_shared<AMQP::TcpConnection>(&handler, AMQP::Address(AMQPMessageBroker));
 
-  auto eventEmitter = std::make_shared<AMQPEventEmitter>(connection, Exchange);
-  auto eventListener = std::make_shared<AMQPEventListener>(connection, eventEmitter, Exchange, QueueName);
+  Logger loggingService = std::make_shared<Fxt::Logging::StandardOutputLogger>("processing-plan-service");
+  loggingService->writeInfoEntry(__FILE__, __LINE__, "Starting processing plan service....");
+
+  auto eventEmitter = std::make_shared<AMQPEventEmitter>(connection, Exchange, loggingService);
+  auto eventListener = std::make_shared<AMQPEventListener>(connection, eventEmitter, Exchange, QueueName, loggingService);
 
   std::string event("processPlanningStarted");
   std::vector<std::string> events;
   events.push_back(event);
 
-  std::function<std::shared_ptr<Event>(EventPtr event)> f = ProcessCadFile;
+  std::function<std::shared_ptr<Event>(EventPtr event, Logger loggingService)> f = ProcessCadFile;
 
   eventListener->Listen(events, f);
 

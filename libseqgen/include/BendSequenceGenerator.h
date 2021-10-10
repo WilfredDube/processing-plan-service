@@ -1,6 +1,7 @@
 #pragma once
 
 #include "../../libfxtract/include/sheet-metal-component/SheetMetal.h"
+#include "../../logging/include/LoggingFacility.h"
 
 #include <memory>
 #include <vector>
@@ -27,10 +28,11 @@ class BendSequenceGenerator
 
     SheetMetalPtr &sheetMetalFeature;
     sw::redis::Redis &redis;
+    Logger &logger;
 
 public:
     BendSequenceGenerator() = delete;
-    explicit BendSequenceGenerator(sw::redis::Redis &redis, std::vector<int> chromosome, SheetMetalPtr &model);
+    explicit BendSequenceGenerator(sw::redis::Redis &redis, std::vector<int> chromosome, SheetMetalPtr &model, Logger &logger);
 
     void generateBendingSequence();
 

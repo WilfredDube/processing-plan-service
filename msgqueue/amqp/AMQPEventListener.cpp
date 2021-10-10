@@ -10,8 +10,8 @@
 
 AMQPEventListener::AMQPEventListener(std::shared_ptr<AMQP::TcpConnection> &connection,
                                      std::shared_ptr<EventEmitter> eventEmitter,
-                                     std::string exchange, std::string queue)
-    : connection{connection}, eventEmitter{eventEmitter}, exchange{exchange}, queue{queue}
+                                     std::string exchange, std::string queue, Logger loggingService)
+    : connection{connection}, eventEmitter{eventEmitter}, exchange{exchange}, queue{queue}, loggingService{loggingService}
 {
     setUp();
 }
