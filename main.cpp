@@ -45,8 +45,21 @@ int main()
   // handler for libev
   AMQPHandler handler(loop);
 
-
   Logger loggingService = std::make_shared<Fxt::Logging::StandardOutputLogger>("processing-plan-service");
+  std::string AMQPAddress;
+  try
+  {
+    AMQPAddress = std::getenv("AMQP");
+  }
+  catch (const std::exception &e)
+  {
+    loggingService->writeErrorEntry(__FILE__, __LINE__, e.what());
+    exit(1);
+  }
+
+  // make a connection to AMQP broker
+  auto connection = std::make_shared<AMQP::TcpConnection>(&handler, AMQP::Address(AMQPAddress));
+
   loggingService->writeInfoEntry(__FILE__, __LINE__, "Starting processing plan service....");
 
   auto eventEmitter = std::make_shared<AMQPEventEmitter>(connection, Exchange, loggingService);

@@ -14,8 +14,9 @@
 
 #include <chrono>
 #include <sw/redis++/redis++.h>
+#include <stdlib.h>
 
-std::string RedisCache = "tcp://redis:6379";
+std::string RedisCache; // "tcp://localhost:6379";
 
 std::shared_ptr<Event> ProcessCadFile(EventPtr event, Logger loggingService)
 {
@@ -34,11 +35,20 @@ std::shared_ptr<Event> ProcessCadFile(EventPtr event, Logger loggingService)
                       value += 1;
                       return value;
                   });
+    try
+    {
+        RedisCache = std::getenv("REDIS");
+    }
+    catch (const std::exception &e)
+    {
+        loggingService->writeErrorEntry(__FILE__, __LINE__, e.what());
+        exit(1);
+    }
 
-    auto bendSequenceGenerator = std::make_shared<BendSequenceGenerator>(redis, vec, unStringifiedSheetMetalObj);
+    auto redis = Redis(RedisCache);
+    auto bendSequenceGenerator = std::make_shared<BendSequenceGenerator>(redis, vec, unStringifiedSheetMetalObj, loggingService);
 
     int startTime = clock();
-    auto begin = std::chrono::high_resolution_clock::now();
 
     bendSequenceGenerator->generateBendingSequence();
 
