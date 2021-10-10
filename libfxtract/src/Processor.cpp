@@ -50,19 +50,18 @@ std::shared_ptr<Event> ProcessCadFile(EventPtr event, Logger loggingService)
 
     int startTime = clock();
 
-    bendSequenceGenerator->generateBendingSequence();
+    try
+    {
+        bendSequenceGenerator->generateBendingSequence();
+    }
+    catch (const std::exception &e)
+    {
+        loggingService->writeErrorEntry(__FILE__, __LINE__, e.what());
+    }
 
-    auto end = std::chrono::high_resolution_clock::now();
     int stopTime = clock();
 
     auto total_time = (stopTime - startTime) / double(CLOCKS_PER_SEC);
-
-    bendSequenceGenerator->print();
-    std::cout << "Time difference = " << std::chrono::duration_cast<std::chrono::microseconds>(end - begin).count() << "[µs]" << std::endl;
-    std::cout << "Time difference = " << std::chrono::duration_cast<std::chrono::nanoseconds>(end - begin).count() << "[ns]" << std::endl;
-    std::cout << "Total difference = " << total_time << "[s]" << std::endl;
-    std::cout << "Time difference = " << std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count() << "[ms]" << std::endl;
-    std::cout << "Time difference = " << std::chrono::duration_cast<std::chrono::seconds>(end - begin).count() << "[s]" << std::endl;
 
     auto result = std::make_shared<ProcessPlanningComplete>();
 

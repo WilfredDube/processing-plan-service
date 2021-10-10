@@ -73,6 +73,5 @@ int main()
 
   eventListener->Listen(events, f);
 
-  // done
   return 0;
 }

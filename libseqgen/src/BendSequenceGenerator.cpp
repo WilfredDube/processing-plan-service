@@ -162,23 +162,6 @@ void BendSequenceGenerator::generateBendingSequence()
     // // sort the population in increasing order of fitness score
     std::sort(population.begin(), population.end());
 
-    // int n = 0;
-    // while (n < 10)
-    // {
-    //     std::cout << "Generation: " << n << "\t";
-    //     std::cout << "String: ";
-    //     for (auto &c : population[n].chromosome)
-    //         std::cout << c << " ";
-    //     std::cout << "\t";
-    //     std::cout << "Fitness: " << population[n].fitness << "  "
-    //               << "Flips: " << population[n].nFlips;
-    //     std::cout << " Tools: " << population[n].nTools;
-    //     std::cout << " Rotations: " << population[n].nRotations;
-    //     std::cout << " Distance: " << population[n].distance << "\n";
-
-    //     ++n;
-    // }
-
     int bestSeq = 0;
     sequenceImpl_->chromosome = population[bestSeq].chromosome;
     sequenceImpl_->fitness = population[bestSeq].fitness;
