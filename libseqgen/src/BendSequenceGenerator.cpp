@@ -50,13 +50,13 @@ double BendSequenceGenerator::Sequence::cal_fitness(SheetMetalPtr &sheetMetalFea
     {
         if ((i + 1) < len)
         {
-            if (cache.find({chromosome[i], chromosome[i + 1]}) != cache.end())
-            {
-                fitness += cache[{chromosome[i], chromosome[i + 1]}].first;
-                distance += cache[{chromosome[i], chromosome[i + 1]}].second;
-                continue;
-            }
-            else
+            // if (cache.find({chromosome[i], chromosome[i + 1]}) != cache.end())
+            // {
+            //     fitness += cache[{chromosome[i], chromosome[i + 1]}].first;
+            //     distance += cache[{chromosome[i], chromosome[i + 1]}].second;
+            //     continue;
+            // }
+            // else
             {
                 // Add 15 if the current and next bend have the same bend angle
                 if (sheetMetalFeature->isSameAngle(chromosome[i], chromosome[i + 1]))
@@ -103,6 +103,7 @@ double BendSequenceGenerator::Sequence::cal_fitness(SheetMetalPtr &sheetMetalFea
 
             cache.insert({{chromosome[i], chromosome[i + 1]}, {pairwiseFitness, seqDistance}});
 
+            // std::cout << __FILE__ << " " << __LINE__ << " Flips:" + nFlips << " Rot:" << nRotations << " SeqD:" << distance << std::endl;
             parallel = 1;
             equality = 1;
             direction = 1;
