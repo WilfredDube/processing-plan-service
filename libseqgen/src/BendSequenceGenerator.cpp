@@ -147,9 +147,9 @@ void BendSequenceGenerator::generateBendingSequence()
             redis.set(std::to_string(initialSequence.size()), value);
         }
     }
-    catch (...)
+    catch (const std::exception &e)
     {
-        // Error handling.
+        logger->writeErrorEntry(__FILE__, __LINE__, e.what());
     }
 
     std::vector<Sequence> population;
@@ -172,6 +172,8 @@ void BendSequenceGenerator::generateBendingSequence()
     sequenceImpl_->distance = population[bestSeq].distance;
     sequenceImpl_->targetSize = population[bestSeq].targetSize;
     sequenceImpl_->nModules = sheetMetalFeature->getNumberOfModules();
+
+    cache.clear();
 }
 
 std::vector<int> BendSequenceGenerator::getSequence() { return sequenceImpl_->chromosome; }

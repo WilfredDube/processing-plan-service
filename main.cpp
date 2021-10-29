@@ -20,7 +20,6 @@
 #include "logging/include/StandardOutputLogger.h"
 
 #include <functional>
-// namespace fs = std::filesystem;
 
 enum class ProcessLevel
 {
@@ -29,9 +28,7 @@ enum class ProcessLevel
   PROCESS_PLAN_GEN
 };
 
-std::string AMQPMessageBroker = "amqp://guest:guest@rabbitmq";
 std::string Exchange = "processes";
-std::string AMQPMessageExternalBroker = "amqp://guest:guest@localhost:5672";
 
 /**
  *  Main program
@@ -46,6 +43,8 @@ int main()
   AMQPHandler handler(loop);
 
   Logger loggingService = std::make_shared<Fxt::Logging::StandardOutputLogger>("processing-plan-service");
+  loggingService->writeInfoEntry(__FILE__, __LINE__, "Starting processing plan service....");
+
   std::string AMQPAddress;
   try
   {
@@ -59,8 +58,6 @@ int main()
 
   // make a connection to AMQP broker
   auto connection = std::make_shared<AMQP::TcpConnection>(&handler, AMQP::Address(AMQPAddress));
-
-  loggingService->writeInfoEntry(__FILE__, __LINE__, "Starting processing plan service....");
 
   auto eventEmitter = std::make_shared<AMQPEventEmitter>(connection, Exchange, loggingService);
   auto eventListener = std::make_shared<AMQPEventListener>(connection, eventEmitter, Exchange, QueueName, loggingService);
