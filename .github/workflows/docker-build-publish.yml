@@ -31,17 +31,3 @@ jobs:
           tags:  doubleu/processing-plan-service:latest
           cache-from: type=registry,ref= doubleu/processing-plan-service:latest
           cache-to: type=inline
-
-      # - 
-      #   uses: mr-smithers-excellent/docker-build-push@v5
-      #   name: Build & push Docker image
-      #   with:
-      #     image: doubleu/processing-plan-service
-      #     registry: docker.io
-      #     tags: v1, latest
-      #     dockerfile: Dockerfile
-      #     username: ${{ secrets.DOCKER_USERNAME }}
-      #     password: ${{ secrets.DOCKER_PASSWORD }}
-      #   env:
-      #     REDIS: ${{ secrets.REDIS }}
-      #     AMQP: ${{ secrets.AMQP }}
