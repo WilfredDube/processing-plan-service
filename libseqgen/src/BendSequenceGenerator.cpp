@@ -144,7 +144,7 @@ void BendSequenceGenerator::generateBendingSequence()
             findPermutations(arr, initialSequence.size(), genomes);
 
             auto value = save(genomes);
-            redis.set(std::to_string(initialSequence.size()), value);
+            redis.set(std::to_string(initialSequence.size()), value, ((std::chrono::milliseconds)(86400000)));
         }
     }
     catch (const std::exception &e)
